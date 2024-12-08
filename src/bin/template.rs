@@ -5,6 +5,8 @@ use std::{
     io::{self, BufRead, Read},
 };
 
+type ParsedInput = String;
+
 fn main() -> io::Result<()> {
     let args = env::args().collect::<Vec<String>>();
     let input = parse_input(&args[1]);
@@ -13,11 +15,11 @@ fn main() -> io::Result<()> {
     Ok(())
 }
 
-fn part_1(input: &String) {}
+fn part_1(input: &ParsedInput) {}
 
-fn part_2(input: &String) {}
+fn part_2(input: &ParsedInput) {}
 
-fn parse_input(filename: &str) -> String {
+fn parse_input(filename: &str) -> ParsedInput {
     let mut buf = String::new();
     let _ = fs::File::open(filename).unwrap().read_to_string(&mut buf);
     buf
