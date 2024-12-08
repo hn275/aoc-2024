@@ -54,6 +54,56 @@ fn part_1(input: &ParsedInput) {
 }
 
 fn part_2(input: &ParsedInput) {
+    let mut wrong = Vec::new();
+
+    (&input.print_order).into_iter().for_each(|update| {
+        let mut printed: Vec<u64> = Vec::new();
+
+        for (index, page) in update.into_iter().enumerate() {
+            let printed_after = &update[index + 1..];
+            let rules = input.rules.get(page);
+            let rules = match rules {
+                None => Vec::new(),
+                Some(rules) => rules.to_owned(),
+            };
+
+            for p in (&printed).into_iter() {
+                if rules.contains(&p) {
+                    wrong.push(update);
+                    return;
+                }
+            }
+            printed.push(*page);
+        }
+    });
+
+    for i in 0..wrong.len() {
+        let mut update = wrong[i];
+
+        let mut printed: Vec<u64> = Vec::new();
+
+        for (index, page) in update.into_iter().enumerate() {
+            let printed_after = &update[index + 1..];
+            let rules = input.rules.get(page);
+            let rules = match rules {
+                None => Vec::new(),
+                Some(rules) => rules.to_owned(),
+            };
+
+            for p in (&printed).into_iter() {
+                if rules.contains(&p) {
+                    wrong.push(update);
+                    return;
+                }
+            }
+            printed.push(*page);
+        }
+    }
+
+    let result: u64 = wrong.iter().map(|&update| update[update.len() / 2]).sum();
+    dbg!(wrong);
+
+    println!("Part 2: {result}");
 }
 
 fn parse_input(filename: &str) -> ParsedInput {
