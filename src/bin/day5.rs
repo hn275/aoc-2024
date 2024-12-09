@@ -77,31 +77,48 @@ fn part_2(input: &ParsedInput) {
         }
     });
 
-    for i in 0..wrong.len() {
-        let mut update = wrong[i];
+    let mut result: u64 = 0;
 
-        let mut printed: Vec<u64> = Vec::new();
+    wrong.into_iter().for_each(|updates| {
+        let mut printed = Vec::new();
 
-        for (index, page) in update.into_iter().enumerate() {
-            let printed_after = &update[index + 1..];
-            let rules = input.rules.get(page);
-            let rules = match rules {
-                None => Vec::new(),
-                Some(rules) => rules.to_owned(),
+        for (index, page) in updates.into_iter().enumerate() {
+            if printed.len() == 0 {
+                printed.push(page);
+                continue;
+            }
+
+            let printed_after = &updates[index + 1..];
+            let rules = match input.rules.get(page) {
+                None => {
+                    printed.push(page);
+                    println!("\tno rules for {page}");
+                    continue;
+                }
+                Some(rules) => rules,
             };
 
-            for p in (&printed).into_iter() {
-                if rules.contains(&p) {
-                    wrong.push(update);
-                    return;
+            let mut right_ord = printed.clone();
+            let mut violate = false;
+            for (i, &p) in (&printed).into_iter().enumerate() {
+                violate = rules.contains(&p);
+                if violate {
+                    right_ord = printed[..i].to_vec();
+                    right_ord.push(page);
+                    right_ord = [right_ord, printed[i..].to_vec()].concat();
+                    break;
                 }
             }
-            printed.push(*page);
-        }
-    }
 
-    let result: u64 = wrong.iter().map(|&update| update[update.len() / 2]).sum();
-    dbg!(wrong);
+            if !violate {
+                right_ord.push(page);
+            }
+
+            printed = right_ord.clone();
+        }
+
+        result += printed[printed.len() / 2];
+    });
 
     println!("Part 2: {result}");
 }
